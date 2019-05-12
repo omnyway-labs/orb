@@ -24,7 +24,7 @@ Input is an =edn= map
 (orb/add "test-rule-1"
          :lambda   "arn:aws:lambda:us-east-1:ACC:function:my-lambda-name"
          :rule     "rate(5 minutes)"
-         :input    {:cue :hello :param {:name "world"}})
+         :input    {:message "hello world"})
 #+END_SRC
 
 Below orb sets up a schedule to trigger the given Lambda every
@@ -38,6 +38,8 @@ midnight UTC.
 #+END_SRC
 
 * Resource Events
+
+`orb` provides a list of pre-defined Event Patterns. Example =:s3-bucket-change=
 
 #+BEGIN_SRC clojure
 (orb/add "test-rule-3"
