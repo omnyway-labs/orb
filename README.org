@@ -18,23 +18,23 @@ Orb rules can be Schedule Events - cron or rate.
 https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
 
 Below orb sets up a schedule to trigger the given Lambda every 5 mins.
-Input is an =edn= map
+`:input` value is an edn-map that is sent as an event to the Lambda
 
 #+BEGIN_SRC clojure
-(orb/add "test-rule-1"
-         :lambda   "arn:aws:lambda:us-east-1:ACC:function:my-lambda-name"
-         :rule     "rate(5 minutes)"
-         :input    {:message "hello world"})
+(orb/create "test-rule-1"
+            :lambda   "arn:aws:lambda:us-east-1:ACC:function:my-lambda-name"
+            :rule     "rate(5 minutes)"
+            :input    {:message "hello world"})
 #+END_SRC
 
 Below orb sets up a schedule to trigger the given Lambda every
 midnight UTC.
 
 #+BEGIN_SRC clojure
-(orb/add "test-rule-2"
-         :lambda   "arn:aws:lambda:us-east-1:ACC:function:my-lambda-name"
-         :rule     "cron(0 0 * * ? *)"
-         :input    {:cue :health.ping :param {}})
+(orb/create "test-rule-2"
+            :lambda   "arn:aws:lambda:us-east-1:ACC:function:my-lambda-name"
+            :rule     "cron(0 0 * * ? *)"
+            :input    {:cue :health.ping :param {}})
 #+END_SRC
 
 * Resource Events
@@ -42,15 +42,14 @@ midnight UTC.
 `orb` provides a list of pre-defined Event Patterns. Example =:s3-bucket-change=
 
 #+BEGIN_SRC clojure
-(orb/add "test-rule-3"
-         :lambda   "arn:aws:lambda:us-east-1:ACC:function:my-lambda-name"
-         :rule    {:id :s3-bucket-change :bucket "my-s3-bucket"}
-         :input   {:cue :upload-data :param {:path "s3-path"}}
+(orb/create "test-rule-3"
+            :lambda   "arn:aws:lambda:us-east-1:ACC:function:my-lambda-name"
+            :rule    {:id :s3-bucket-change :bucket "my-s3-bucket"}
+            :input   {:cue :upload-data :param {:path "s3-path"}}
 #+END_SRC
 
 
-To list rules
-
+To list orbs
 #+BEGIN_SRC clojure
 (orb/list)
 => ({:name "test-rule-1",
