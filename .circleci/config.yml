@@ -1,0 +1,32 @@
+version: 2
+jobs:
+  unit-test:
+    parallelism: 2
+    working_directory: ~/orb
+    docker:
+      - image: omnyway/vulcan:latest
+    environment:
+    steps:
+      - checkout
+      - run: vulcan test
+  release:
+    parallelism: 1
+    working_directory: ~/orb
+    docker:
+      - image: omnyway/vulcan:latest
+    environment:
+      - VERSION_FILE: ../VERSION
+      - GOROOT: ""
+      - GOPATH: "/root/.go"
+    steps:
+      - checkout
+      - run: vulcan next-tag > $VERSION_FILE
+      - run: export SEMVER=$(cat $VERSION_FILE); github-release release --user omnyway-labs --repo orb --tag $SEMVER  --target $CIRCLE_SHA1
+workflows:
+  version: 2
+  build_test_release:
+    jobs:
+      - release:
+          filters:
+            branches:
+              only: master

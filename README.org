@@ -1,0 +1,91 @@
+* About
+
+Clojure Library to create Cloudwatch Events and Rules for Lambdas
+
+=orb= is an abstraction over Cloudwatch Events that encapsulates given
+Lambda Target, the Trigger(Schedule or Resource event) and the Input
+to the Target when the Trigger occurs.
+
+#+BEGIN_SRC clojure
+(require '[orb.core :as orb])
+(orb/init! {:auth-type :profile
+            :profile :qa})
+#+END_SRC
+
+* Scheduling Events
+
+Orb rules can be Schedule Events - cron or rate.
+https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
+
+Below orb sets up a schedule to trigger the given Lambda every 5 mins.
+Input is an =edn= map
+
+#+BEGIN_SRC clojure
+(orb/add "test-rule-1"
+         :lambda   "arn:aws:lambda:us-east-1:ACC:function:my-lambda-name"
+         :rule     "rate(5 minutes)"
+         :input    {:cue :hello :param {:name "world"}})
+#+END_SRC
+
+Below orb sets up a schedule to trigger the given Lambda every
+midnight UTC.
+
+#+BEGIN_SRC clojure
+(orb/add "test-rule-2"
+         :lambda   "arn:aws:lambda:us-east-1:ACC:function:my-lambda-name"
+         :rule     "cron(0 0 * * ? *)"
+         :input    {:cue :health.ping :param {}})
+#+END_SRC
+
+* Resource Events
+
+#+BEGIN_SRC clojure
+(orb/add "test-rule-3"
+         :lambda   "arn:aws:lambda:us-east-1:ACC:function:my-lambda-name"
+         :rule    {:id :s3-bucket-change :bucket "my-s3-bucket"}
+         :input   {:cue :upload-data :param {:path "s3-path"}}
+#+END_SRC
+
+
+To list rules
+
+#+BEGIN_SRC clojure
+(orb/list)
+=> ({:name "test-rule-1",
+     :state "ENABLED",
+     :rule  "rate(5 minutes)"}
+    {:name "test-rule-2",
+     :state "ENABLED",
+     :rule  "cron(0 0 * * ? *)"}
+    ...)
+#+END_SRC
+
+To delete the rule
+
+#+BEGIN_SRC clojure
+(orb/delete "test-rule-1")
+#+END_SRC
+
+* Invoking Lambda
+
+=request= invokes the Lambda and returns the response value with
+the associated log.
+
+#+BEGIN_SRC clojure
+(orb/request lambda-name payload)
+(orb/request "my-lambda-name" {:cue "health.ping" :param {}})
+
+=> {:response "pong",
+    :log
+    ["START RequestId: 9d1578f3-d4b6-489e-958e-84e7c7cc30b2 Version: $LATEST"
+     ":input {:cue health.ping, :param {}}"
+     "END RequestId: 9d1578f3-d4b6-489e-958e-84e7c7cc30b2"
+     "REPORT RequestId: 9d1578f3-d4b6-489e-958e-84e7c7cc30b2\tDuration: 63.79 ms\tBilled Duration: 100 ms \tMemory Size: 1024 MB\tMax Memory Used: 199 MB\t"],
+    :error nil,
+    :version "$LATEST"}
+#+END_SRC
+
+=send= is async and returns immediately with a trackable ID
+#+BEGIN_SRC clojure
+(orb/send "partman-lambda" {:cue :eventlog.add-partitions :param {}})
+#+END_SRC

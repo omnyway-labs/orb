@@ -1,0 +1,12 @@
+{:deps
+ {com.amazonaws/aws-java-sdk-events {:mvn/version "1.11.475"},
+  com.amazonaws/aws-java-sdk-lambda {:mvn/version "1.11.475"},
+  omnyway-labs/saw
+  {:git/url "https://github.com/omnyway-labs/saw.git",
+   :sha "52fcaa673306133c0f535c0bc70178e33f84bc3e",
+   :time "2019-05-03T16:11:18.000+0000",
+   :tag "0.1.19"},
+  org.clojure/clojure {:mvn/version "1.9.0"},
+  org.clojure/data.json {:mvn/version "0.2.6"},
+  org.slf4j/slf4j-simple {:mvn/version "1.6.1"}},
+ :paths ["src"]}
