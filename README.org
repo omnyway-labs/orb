@@ -27,20 +27,20 @@ Below orb sets up a schedule to trigger the given Lambda every 5 mins.
 `:input` value is an edn-map that is sent as an event to the Lambda
 
 #+BEGIN_SRC clojure
-(orb/create "test-rule-1"
-            :lambda   "arn:aws:lambda:us-east-1:ACC:function:my-lambda-name"
-            :rule     "rate(5 minutes)"
-            :input    {:message "hello world"})
+(orb/create! "test-rule-1"
+             :lambda   "arn:aws:lambda:us-east-1:ACC:function:my-lambda-name"
+             :rule     "rate(5 minutes)"
+             :input    {:message "hello world"})
 #+END_SRC
 
 Below orb sets up a schedule to trigger the given Lambda every
 midnight UTC.
 
 #+BEGIN_SRC clojure
-(orb/create "test-rule-2"
-            :lambda   "arn:aws:lambda:us-east-1:ACC:function:my-lambda-name"
-            :rule     "cron(0 0 * * ? *)"
-            :input    {:cue :health.ping :param {}})
+(orb/create! "test-rule-2"
+             :lambda   "arn:aws:lambda:us-east-1:ACC:function:my-lambda-name"
+             :rule     "cron(0 0 * * ? *)"
+             :input    {:cue :health.ping :param {}})
 #+END_SRC
 
 * Resource Events
@@ -48,16 +48,16 @@ midnight UTC.
 `orb` provides a list of pre-defined Event Patterns. Example =:s3-bucket-change=
 
 #+BEGIN_SRC clojure
-(orb/create "test-rule-3"
-            :lambda   "arn:aws:lambda:us-east-1:ACC:function:my-lambda-name"
-            :rule    {:id :s3-bucket-change :bucket "my-s3-bucket"}
-            :input   {:cue :upload-data :param {:path "s3-path"}}
+(orb/create! "test-rule-3"
+             :lambda   "arn:aws:lambda:us-east-1:ACC:function:my-lambda-name"
+             :rule    {:id :s3-bucket-change :bucket "my-s3-bucket"}
+             :input   {:cue :upload-data :param {:path "s3-path"}}
 #+END_SRC
 
 
 To list orbs
 #+BEGIN_SRC clojure
-(orb/list)
+(orb/list-rules)
 => ({:name "test-rule-1",
      :state "ENABLED",
      :rule  "rate(5 minutes)"}
@@ -70,7 +70,7 @@ To list orbs
 To delete the rule
 
 #+BEGIN_SRC clojure
-(orb/delete "test-rule-1")
+(orb/delete! "test-rule-1")
 #+END_SRC
 
 * Adhoc Events
@@ -94,7 +94,7 @@ the associated log.
 
 =send= is async and returns immediately with a trackable ID
 #+BEGIN_SRC clojure
-(orb/send "partman-lambda" {:cue :eventlog.add-partitions :param {}})
+(orb/send! "partman-lambda" {:cue :eventlog.add-partitions :param {}})
 #+END_SRC
 
 * License - Apache 2.0

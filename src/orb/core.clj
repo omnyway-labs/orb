@@ -1,5 +1,4 @@
 (ns orb.core
-  (:refer-clojure :exclude [send delete list])
   (:require
    [saw.core :as saw]
    [orb.event :as event]
@@ -8,19 +7,19 @@
 (defn request [fn-name payload]
   (lambda/invoke :request-response fn-name payload))
 
-(defn send [fn-name payload]
+(defn send! [fn-name payload]
   (lambda/invoke :event fn-name payload))
 
-(defn list []
+(defn list-rules []
   (event/list-rules))
 
-(defn create [name & {:keys [rule lambda input]}]
+(defn create! [name & {:keys [rule lambda input]}]
   (let [rule-arn (event/add-rule name rule)]
     (event/add-target name lambda input)
     (lambda/add-permission lambda name rule-arn)
     rule-arn))
 
-(defn delete [name]
+(defn delete! [name]
   (-> (event/find-target name)
       :arn
       (lambda/remove-permission name))

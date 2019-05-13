@@ -9,9 +9,9 @@
            :state "ENABLED"
            :rule  "rate(5 minutes)"}]
          (do
-           (orb/create "test-rule"
-                       :rule   "rate(5 minutes)"
-                       :lambda (System/getenv "ORB_LAMBDA_ARN")
-                       :input  {:cue "health.ping" :param {}})
-           (orb/list)
-           (orb/delete "test-rule")))))
+           (orb/create! "test-rule"
+                        :rule   "rate(5 minutes)"
+                        :lambda (System/getenv "ORB_LAMBDA_ARN")
+                        :input  {:cue "health.ping" :param {}})
+           (orb/list-rules)
+           (orb/delete! "test-rule")))))
