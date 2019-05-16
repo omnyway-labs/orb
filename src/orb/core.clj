@@ -5,10 +5,10 @@
    [orb.lambda :as lambda]))
 
 (defn request [fn-name payload]
-  (lambda/invoke :request-response fn-name payload))
+  (lambda/invoke :request-response (name fn-name) payload))
 
 (defn send! [fn-name payload]
-  (lambda/invoke :event fn-name payload))
+  (lambda/invoke :event (name fn-name) payload))
 
 (defn list-rules []
   (event/list-rules))
