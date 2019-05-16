@@ -12,6 +12,7 @@
     LogType
     AddPermissionRequest
     RemovePermissionRequest
+    ListFunctionsRequest
     InvocationType]))
 
 (def client (atom nil))
@@ -76,6 +77,19 @@
          (.withFunctionName fn-name)
          (.withStatementId rule-name))
        (.removePermission @client)))
+
+(defn as-function [f]
+  {:handler (.getHandler f)
+   :timeout (.getTimeout f)
+   :memory  (.getMemorySize f)
+   :name    (.getFunctionName f)
+   :runtime (.getRuntime f)})
+
+(defn list-all []
+  (->> (ListFunctionsRequest.)
+       (.listFunctions @client)
+       (.getFunctions)
+       (map as-function)))
 
 (defn init! [region]
   (reset! client (make-client region)))

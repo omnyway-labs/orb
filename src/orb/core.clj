@@ -13,6 +13,9 @@
 (defn list-rules []
   (event/list-rules))
 
+(defn list-lambdas []
+  (lambda/list-all))
+
 (defn create! [name & {:keys [rule lambda input]}]
   (let [rule-arn (event/add-rule name rule)]
     (event/add-target name lambda input)

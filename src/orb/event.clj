@@ -30,10 +30,11 @@
       .build))
 
 (defn as-target [t]
-  {:id    (.getId t)
-   :arn   (.getArn t)
-   :input (-> (.getInput t)
-              (json/read-str :key-fn keyword))})
+  (when t
+    {:id  (.getId t)
+     :arn   (.getArn t)
+     :input (-> (.getInput t)
+                (json/read-str :key-fn keyword))}))
 
 (defn find-target [rule-name]
   (->> (doto (ListTargetsByRuleRequest.)
