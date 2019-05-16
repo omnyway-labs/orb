@@ -79,11 +79,11 @@
        (.removePermission @client)))
 
 (defn as-function [f]
-  {:handler (.getHandler f)
-   :timeout (.getTimeout f)
-   :memory  (.getMemorySize f)
-   :name    (.getFunctionName f)
-   :runtime (.getRuntime f)})
+  {:name        (.getFunctionName f)
+   :runtime     (.getRuntime f)
+   :timeout     (.getTimeout f)
+   :memory      (.getMemorySize f)
+   :description (.getDescription f)})
 
 (defn list-all []
   (->> (ListFunctionsRequest.)
