@@ -29,19 +29,21 @@
 (defn b64-encode [s]
   (.encode (Base64/getEncoder) s))
 
-(defn as-result [x]
-  {:response (->> (.getPayload x)
-                  (.array)
-                  (map char)
-                  (apply str)
-                  (json/read-str))
-   :log      (as-> (->> (.getLogResult x)
-                        (b64-decode)
-                        (map char)
-                        (apply str)) r
-               (str/split r #"\n"))
-   :error    (.getFunctionError x)
-   :version  (.getExecutedVersion x)})
+(defn as-result [type x]
+  (if (= type :request-response)
+    {:response (->> (.getPayload x)
+                    (.array)
+                    (map char)
+                    (apply str)
+                    (json/read-str))
+     :log        (as-> (->> (.getLogResult x)
+                            (b64-decode)
+                            (map char)
+                            (apply str)) r
+                   (str/split r #"\n"))
+     :error      (.getFunctionError x)
+     :version    (.getExecutedVersion x)}
+    {:response (.getStatusCode x)}))
 
 (defn as-log-type [type]
   (condp = type
@@ -61,7 +63,7 @@
          (.withLogType (as-log-type :tail))
          (.withPayload (json/write-str payload)))
        (.invoke @client)
-       (as-result)))
+       (as-result type)))
 
 (defn add-permission [fn-name rule-name rule-arn]
   (->> (doto (AddPermissionRequest.)
