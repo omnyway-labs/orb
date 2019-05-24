@@ -1,8 +1,9 @@
 (ns orb.event
   (:require
+   [clojure.data.json :as json]
+   [clojure.string :as str]
    [saw.core :as saw]
-   [orb.event-pattern :as ep]
-   [clojure.data.json :as json])
+   [orb.event-pattern :as ep])
   (:import
    [com.amazonaws.regions Regions]
    [com.amazonaws.services.cloudwatchevents
@@ -29,10 +30,15 @@
       (.withRegion region)
       .build))
 
+(defn arn->fn [arn]
+  (-> (str/split arn #":")
+      (last)))
+
 (defn as-target [t]
   (when t
     {:id  (.getId t)
      :arn   (.getArn t)
+     :fn    (-> (.getArn t) arn->fn)
      :input (let [input (.getInput t)]
               (try
                 (json/read-str input :key-fn keyword)

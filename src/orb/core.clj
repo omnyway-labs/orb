@@ -11,7 +11,11 @@
   (lambda/invoke :event (name fn-name) payload))
 
 (defn list-rules []
-  (event/list-rules))
+  (->> (event/list-rules)
+       (map (fn [{:keys [name] :as rule}]
+              (let [target  (event/find-target name)]
+                (merge rule
+                       (select-keys target [:input :fn])))))))
 
 (defn list-lambdas []
   (lambda/list-all))
