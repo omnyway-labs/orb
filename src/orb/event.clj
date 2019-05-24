@@ -33,8 +33,11 @@
   (when t
     {:id  (.getId t)
      :arn   (.getArn t)
-     :input (-> (.getInput t)
-                (json/read-str :key-fn keyword))}))
+     :input (let [input (.getInput t)]
+              (try
+                (json/read-str input :key-fn keyword)
+                (catch Exception _
+                  input)))}))
 
 (defn find-target [rule-name]
   (->> (doto (ListTargetsByRuleRequest.)
